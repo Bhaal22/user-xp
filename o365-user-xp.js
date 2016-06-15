@@ -31,9 +31,8 @@ page.onConsoleMessage = function(msg) {
 };
 
 
-var sharepointSite = "https://gsxch.sharepoint.com/";
+var sharepointSite = "https://mySite";
 var o365AuthPage = "https://login.microsoftonline.com/";
-var spOnPremise = "http://sharepoint/gsxts"
 
 page.onConsoleMessage = function(msg) {
   console.dir(msg);
