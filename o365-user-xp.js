@@ -1,3 +1,9 @@
+var system = require('system');
+var args = system.args;
+
+var username = "";
+var password = "";
+
 var page = require('webpage').create();
 
 var testindex = 0;
@@ -64,6 +70,15 @@ var steps = [
     //console.log(result);
   }
 ];
+
+
+if (args.length !== 3) {
+  console.log('Usage: phantomjs o365-user-xp.js $username $password');
+} else {
+  args.forEach(function(arg, i) {
+    console.log(i + ': ' + arg);
+  });
+}
 
 
 //Execute steps one by one
