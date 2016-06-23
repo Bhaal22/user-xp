@@ -69,12 +69,9 @@ var steps = [
 	    return document.querySelectorAll("html")[0].outerHTML;
     });
     fs.write('SharepointSite.html',result,'w');
-
-    //console.log(result);
   }
 ];
 
-console.log(args.length);
 if (args.length !== 4) {
   console.log('Usage: phantomjs o365-user-xp.js $site $username $password');
   phantom.exit();
