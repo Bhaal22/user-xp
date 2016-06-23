@@ -1,6 +1,7 @@
 var system = require('system');
 var args = system.args;
 
+var site = "";
 var username = "";
 var password = "";
 
@@ -46,18 +47,20 @@ page.onConsoleMessage = function(msg) {
 
 var steps = [
   function() {
-    page.open(sharepointSite, function(status) {
+    page.open(site, function(status) {
       if(status === "success") {
       }
     });
   },
 
   function() {
-    page.evaluate(function() {
-      $("#cred_userid_inputtext").val("username");
-      $("#cred_password_inputtext").val("password");
+    page.evaluate(function(username, password) {
+      console.log(username);
+      console.log(password);
+      $("#cred_userid_inputtext").val(username);
+      $("#cred_password_inputtext").val(password);
       $("#credentials").submit();
-    });
+    }, username, password);
   },
 
   function() {
@@ -71,13 +74,14 @@ var steps = [
   }
 ];
 
-
-if (args.length !== 3) {
-  console.log('Usage: phantomjs o365-user-xp.js $username $password');
+console.log(args.length);
+if (args.length !== 4) {
+  console.log('Usage: phantomjs o365-user-xp.js $site $username $password');
+  phantom.exit();
 } else {
-  args.forEach(function(arg, i) {
-    console.log(i + ': ' + arg);
-  });
+  site = args[1];
+  username = args[2];
+  password = args[3];
 }
 
 
