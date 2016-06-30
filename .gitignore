@@ -41,3 +41,4 @@ bin
 debug
 packages
 \.suo
+*.user
