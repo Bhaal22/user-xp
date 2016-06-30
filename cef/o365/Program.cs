@@ -15,11 +15,13 @@ namespace o365
     {
         private static ChromiumWebBrowser browser;
 
+        public static string O365AuthPage { get; set; }
+        private static string username;
+        private static string password;
+
         public static void Main(string[] args)
         {
-            const string o365AuthPage = "https://login.microsoftonline.com/";
-
-            Console.WriteLine("This example will login to o365 website:", o365AuthPage);
+            Console.WriteLine("This example will login to o365 website:", O365AuthPage);
             Console.WriteLine("You may see Chromium debugging output, please wait...");
             Console.WriteLine();
 
@@ -31,7 +33,7 @@ namespace o365
             Cef.Initialize(settings, shutdownOnProcessExit: true, performDependencyCheck: true);
 
             // Create the offscreen Chromium browser.
-            browser = new ChromiumWebBrowser(o365AuthPage);
+            browser = new ChromiumWebBrowser(O365AuthPage);
 
             // An event that is fired when the first page is finished loading.
             // This returns to us from another thread.
@@ -55,12 +57,67 @@ namespace o365
                 // Remove the load event handler, because we only want one snapshot of the initial page.
                 browser.LoadingStateChanged -= BrowserLoadingStateChanged;
 
-                var scriptTask = browser.EvaluateScriptAsync("document.getElementById('lst-ib').value = 'CefSharp Was Here!'");
+                //browser.LoadingStateChanged += BrowserAuthenticationLoadingStateChanged;
+                var scriptTask = browser.EvaluateScriptAsync($"$('#cred_userid_inputtext').val('{username}'); $('#cred_password_inputtext').val('{password}.'); $('#credentials').submit();");
+
+                scriptTask.ContinueWith(t =>
+                {
+                    Thread.Sleep(5000);
+
+                    var scriptTask2 = browser.EvaluateScriptAsync("$('button.o365cs-nav-item.o365cs-nav-button.o365cs-me-nav-item.o365button.ms-bgc-tdr-h.ms-fcl-w').click();");
+
+                    scriptTask2.ContinueWith(t2 =>
+                    {
+                        //Give the browser a little time to render
+                        Thread.Sleep(5000);
+
+                        // Wait for the screenshot to be taken.
+                        var task = browser.ScreenshotAsync();
+                        task.ContinueWith(x =>
+                        {
+                            // Make a file to save it to (e.g. C:\Users\jan\Desktop\CefSharp screenshot.png)
+                            var screenshotPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "CefSharp screenshot.png");
+
+                            Console.WriteLine();
+                            Console.WriteLine("Screenshot ready. Saving to {0}", screenshotPath);
+
+                            // Save the Bitmap to the path.
+                            // The image type is auto-detected via the ".png" extension.
+                            task.Result.Save(screenshotPath);
+
+                            // We no longer need the Bitmap.
+                            // Dispose it to avoid keeping the memory alive.  Especially important in 32-bit applications.
+                            task.Result.Dispose();
+
+                            Console.WriteLine("Screenshot saved.  Launching your default image viewer...");
+
+                            // Tell Windows to launch the saved image.
+                            Process.Start(screenshotPath);
+
+                            Console.WriteLine("Image viewer launched.  Press any key to exit.");
+                        });
+                    });
+                });
+            }
+        }
+
+        private static void BrowserAuthenticationLoadingStateChanged(object sender, LoadingStateChangedEventArgs e)
+        {
+            // Check to see if loading is complete - this event is called twice, one when loading starts
+            // second time when it's finished
+            // (rather than an iframe within the main frame).
+            if (!e.IsLoading)
+            {
+                // Remove the load event handler, because we only want one snapshot of the initial page.
+                 browser.LoadingStateChanged -= BrowserAuthenticationLoadingStateChanged;
+
+                var scriptTask = browser.EvaluateScriptAsync("$('button.o365cs-nav-item.o365cs-nav-button.o365cs-me-nav-item.o365button.ms-bgc-tdr-h.ms-fcl-w').click();");
 
                 scriptTask.ContinueWith(t =>
                 {
                     //Give the browser a little time to render
-                    Thread.Sleep(500);
+                    Thread.Sleep(5000);
+
                     // Wait for the screenshot to be taken.
                     var task = browser.ScreenshotAsync();
                     task.ContinueWith(x =>
