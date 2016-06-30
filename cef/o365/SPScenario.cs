@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace o365
 {
-    class SPScenario
+    internal class SPScenario
     {
         private string _url;
         private string _username;
@@ -14,7 +14,7 @@ namespace o365
 
         private ChromiumWebBrowser _browser;
 
-        SPScenario(string goTo, string username, string password)
+        public SPScenario(string goTo, string username, string password)
         {
             _url = goTo;
             _username = username;

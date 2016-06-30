@@ -1,10 +1,5 @@
 ﻿using CefSharp;
-using CefSharp.OffScreen;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace o365
 {
@@ -19,6 +14,14 @@ namespace o365
             //Perform dependency check to make sure all relevant resources are in our output directory.
             Cef.Initialize(settings, shutdownOnProcessExit: true, performDependencyCheck: true);
 
+
+            var url = args[1];
+            var username = args[2];
+            var password = args[3];
+
+            var scenario = new SPScenario(url, username, password);
+
+            scenario.Run();
 
             // We have to wait for something, otherwise the process will exit too soon.
             Console.ReadKey();
