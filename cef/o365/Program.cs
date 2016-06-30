@@ -15,11 +15,11 @@ namespace o365
             Cef.Initialize(settings, shutdownOnProcessExit: true, performDependencyCheck: true);
 
 
-            var url = args[1];
-            var username = args[2];
-            var password = args[3];
+            var url = args[0];
+            var username = args[1];
+            var password = args[2];
 
-            var scenario = new SPScenario(url, username, password);
+            var scenario = new SPOnlineScenario(url, username, password);
 
             scenario.Run();
 
@@ -49,7 +49,6 @@ namespace o365
         //        browser.LoadingStateChanged -= BrowserLoadingStateChanged;
 
         //        //browser.LoadingStateChanged += BrowserAuthenticationLoadingStateChanged;
-        //        var scriptTask = browser.EvaluateScriptAsync($"$('#cred_userid_inputtext').val('{username}'); $('#cred_password_inputtext').val('{password}.'); $('#credentials').submit();");
 
         //        scriptTask.ContinueWith(t =>
         //        {
