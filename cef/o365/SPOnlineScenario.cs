@@ -27,6 +27,9 @@ namespace o365
             _scenarioFinishedEvent = new ManualResetEvent(false);
 
             _browser = new ChromiumWebBrowser(_url);
+            
+            _browser.DialogHandler = new DialogHandler();
+            _browser.JsDialogHandler = new JSDialogHandler();
         }
 
         public void WaitForEndOfScenario()
@@ -45,10 +48,6 @@ namespace o365
 
 
             //await LoadPageAsync($"{_url}/Shared Documents/Forms/AllItems.aspx");
-
-            var dialogHandler = new DialogHandler();
-            _browser.DialogHandler = dialogHandler;
-
             await UploadDocument();
 
             Console.ReadKey();
@@ -127,7 +126,7 @@ namespace o365
             scriptTask.ContinueWith(t =>
             {
                 Console.WriteLine("Get Upload Menu = " + t.Result.Message);
-                Thread.Sleep(2000);
+                Thread.Sleep(200);
                 return _browser.EvaluateScriptAsync("var upload_button = document.getElementsByClassName('ContextualMenu-uploadInput')[0]; upload_button.click();");
 
             }).ContinueWith(t =>
