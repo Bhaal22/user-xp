@@ -11,6 +11,11 @@ namespace o365
             var settings = new CefSettings();
             // Disable GPU in WPF and Offscreen examples until #1634 has been resolved
             settings.CefCommandLineArgs.Add("disable-gpu", "1");
+            settings.CefCommandLineArgs.Add("disable-web-security", "1");
+            settings.RemoteDebuggingPort = 8088;
+
+            //var t1 = Cef.AddCrossOriginWhitelistEntry("https://login.microsoftonline.com", "https", string.Empty, true);
+            //var t2 = Cef.AddCrossOriginWhitelistEntry("https://portal.office365.com", "https", string.Empty, true);
 
             //Perform dependency check to make sure all relevant resources are in our output directory.
             Cef.Initialize(settings, shutdownOnProcessExit: true, performDependencyCheck: true);

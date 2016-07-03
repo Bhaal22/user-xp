@@ -46,23 +46,8 @@ namespace o365
 
             //await LoadPageAsync($"{_url}/Shared Documents/Forms/AllItems.aspx");
 
-            var s = await _browser.GetSourceAsync();
-
-            var identifiers = _browser.GetBrowser().GetFrameIdentifiers();
-            //var dialogHandler = new DialogHandler();
-            //_browser.DialogHandler = dialogHandler;
-
-            foreach (int i in identifiers)
-            {
-                var frame = _browser.GetBrowser().GetFrame(i);
-                string s2 = await frame.GetSourceAsync();
-
-                Console.WriteLine("--------------------------");
-                Console.WriteLine(s2);
-                Console.WriteLine("--------------------------");
-
-            }
-
+            var dialogHandler = new DialogHandler();
+            _browser.DialogHandler = dialogHandler;
 
             await UploadDocument();
 
@@ -102,7 +87,7 @@ namespace o365
 
             scriptTask.ContinueWith(t =>
             {
-                Thread.Sleep(15000);
+                Thread.Sleep(45000);
 
                 // Wait for the screenshot to be taken.
                 var task = _browser.ScreenshotAsync();
@@ -136,37 +121,18 @@ namespace o365
         private Task UploadDocument()
         {
             var tcs = new TaskCompletionSource<bool>();
-
-            var identifiers = _browser.GetBrowser().GetFrameIdentifiers();
-
-            foreach (var i in identifiers)
-            {
-                var _frame = _browser.GetBrowser().GetFrame(i);
-                _frame.SelectAll();
-                //Console.WriteLine(frame.Name);
-            }
-
-
-            //var dialogHandler = new DialogHandler();
-            //_browser.DialogHandler = dialogHandler;
-
-            var frame = _browser.GetBrowser().GetFrame(identifiers[0]);
-
-            //string s = await frame.GetSourceAsync();
-            //var scriptTask = _browser.EvaluateScriptAsync("$('div.CommandBar-mainArea > div.CommandBarItem.beak-anchor.command.is-focused > div > div').click();");
-            var scriptTask = frame.EvaluateScriptAsync("document.getElementsByClassName('CommandBarItem beak-anchor command is-focused').children[0].click();");
-            //document.getElementsByClassName("CommandBarItem beak-anchor command is-focused");
+            var scriptTask = _browser.EvaluateScriptAsync("var upload_div = document.getElementsByClassName('CommandBarItem-link')[3]; upload_div.click();");
 
 
             scriptTask.ContinueWith(t =>
             {
                 Console.WriteLine("Get Upload Menu = " + t.Result.Message);
                 Thread.Sleep(2000);
-                return _browser.EvaluateScriptAsync("$('input.ContextualMenu-fileInput').click();");
+                return _browser.EvaluateScriptAsync("var upload_button = document.getElementsByClassName('ContextualMenu-uploadInput')[0]; upload_button.click();");
 
             }).ContinueWith(t =>
             {
-                Thread.Sleep(2000);
+                Thread.Sleep(200);
 
                 // Wait for the screenshot to be taken.
                 var task = _browser.ScreenshotAsync();
