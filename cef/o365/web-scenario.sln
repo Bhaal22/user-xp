@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "o365", "o365.csproj", "{F18AF58B-236C-4FD8-838F-3E00D97C45F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web-scenario", "web-scenario.csproj", "{F18AF58B-236C-4FD8-838F-3E00D97C45F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
