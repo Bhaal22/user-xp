@@ -7,7 +7,7 @@ using System.Threading;
 using System.IO;
 using System.Diagnostics;
 
-namespace o365
+namespace webscenario
 {
     internal class GmailScenario
     {
