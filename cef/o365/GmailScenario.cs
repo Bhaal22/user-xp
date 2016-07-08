@@ -49,11 +49,12 @@ namespace o365
                 await HandleAuthentication();
             }
 
-            Console.ReadKey();
+            Thread.Sleep(2000);
             var emailCount = await HowManyMailsInInbox();
             Console.WriteLine(emailCount);
 
-            Console.ReadKey();
+            await ScreenShot();
+             Console.ReadKey();
             _scenarioFinishedEvent.Set();
         }
 
@@ -62,7 +63,7 @@ namespace o365
             var script =
             @"
                (function() {
-                    var in_id = document.getElementById(':in');
+                    var in_id = document.getElementsByClassName('J-J5-Ji amH J-JN-I')[0];
                     var dj = in_id.getElementsByClassName('Dj')[0];
 
                     return dj.textContent;
@@ -72,7 +73,7 @@ namespace o365
 
             var scriptExecution = await _browser.EvaluateScriptAsync(script);
 
-            return (string)scriptExecution.Message;
+            return (string)scriptExecution.Result;
         }
 
         private async Task<string> GetLoginLink()
@@ -127,15 +128,15 @@ namespace o365
         private async Task HandleAuthentication()
         {
             var script_login =
-            @"(function() {
+            $@"(function() {{
                  var email_id = 'Email';
                  var next_id = 'next';
                  var email_input = document.getElementById(email_id);
-                 email_input.value = 'username';
+                 email_input.value = '{_username}';
                  console.log('value =' + email_input.value);
                  var next_button = document.getElementById(next_id);
                  next_button.click();
-               }
+               }}
               )();";
 
             var scriptTask = await _browser.EvaluateScriptAsync(script_login);
@@ -145,19 +146,15 @@ namespace o365
                 Console.WriteLine($"scriptTask failed {scriptTask.Message}");
 
             var script_password =
-                    @"(function() {
+                    $@"(function() {{
                          var password_id = 'Passwd';
                          var connection_id = 'signIn';
                          var password_input = document.getElementById(password_id);
-                         password_input.value = 'password';
-                         console.log('value');
-                         
-                         //var connection_button = document.getElementById(connection_id);
-                         //connection_button.click();
+                         password_input.value = '{_password}';
 
                          var form = document.getElementById('gaia_loginform');
                          form.submit();
-                       }
+                       }}
                       )();";
 
             var signInScript = await _browser.EvaluateScriptAsync(script_password);
@@ -165,28 +162,30 @@ namespace o365
                 Console.WriteLine($"signInScript failed {signInScript.Message}");
 
             Thread.Sleep(1000);
+        }
 
-                     // Wait for the screenshot to be taken.
-            //var task = await _browser.ScreenshotAsync();
-                     
-            //             // Make a file to save it to (e.g. C:\Users\jan\Desktop\CefSharp screenshot.png)
-            //var screenshotPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "CefSharp screenshot.png");
+        private async Task ScreenShot()
+        {
+            var task = await _browser.ScreenshotAsync();
 
-            //Console.WriteLine();
-            //Console.WriteLine("Screenshot ready. Saving to {0}", screenshotPath);
+            // Make a file to save it to (e.g. C:\Users\jan\Desktop\CefSharp screenshot.png)
+            var screenshotPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "CefSharp screenshot.png");
 
-            // // Save the Bitmap to the path.
-            // // The image type is auto-detected via the ".png" extension.
-            // //task.Result.Save(screenshotPath);
+            Console.WriteLine();
+            Console.WriteLine("Screenshot ready. Saving to {0}", screenshotPath);
 
-            // // We no longer need the Bitmap.
-            // // Dispose it to avoid keeping the memory alive.  Especially important in 32-bit applications.
-            // //task.Result.Dispose();
+            // Save the Bitmap to the path.
+            // The image type is auto-detected via the ".png" extension.
+            task.Save(screenshotPath);
 
-            // Console.WriteLine("Screenshot saved.  Launching your default image viewer...");
+            // We no longer need the Bitmap.
+            // Dispose it to avoid keeping the memory alive.  Especially important in 32-bit applications.
+            task.Dispose();
 
-            // // Tell Windows to launch the saved image.
-            // Process.Start(screenshotPath);
+            Console.WriteLine("Screenshot saved.  Launching your default image viewer...");
+
+            // Tell Windows to launch the saved image.
+            Process.Start(screenshotPath);
         }
     }
 }
